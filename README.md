@@ -18,7 +18,7 @@
 - **Buzzer**  
 
 ## 📷 Screenshot  
-![Web Interface](screenshot.png)  
+![Web Interface](https://raw.githubusercontent.com/OleksiiShataliuk/ESP32-Battery-Tester/main/screenshot.png)
 
 ## 🚀 Installation  
 1. Clone repo:  
