@@ -21,14 +21,15 @@
 ## 🚀 Installation  
 1. Clone repo:  
    ```bash
-   git clone https://github.com/OleksiiShataliuk/Battery-Capacity-Tester.git
-Install Arduino IDE & ESP32 board
-Install INA226 library:
-Open Library Manager in Arduino IDE
-Search Adafruit INA226 and install
-Upload code to ESP32
+   git clone https://github.com/OleksiiShataliuk/ESP32-Battery-Capacity-Tester.git
+2. Install Arduino IDE & ESP32 board
+3. Install INA226 library:
+  - Open Library Manager in Arduino IDE
+  - Search Adafruit INA226 and install
+4. Upload code to ESP32
+
 🖥️ Web Interface
-Start test: http://192.168.4.1/start
-Stop test: http://192.168.4.1/stop
-Set Voltage Threshold: http://192.168.4.1/set_threshold
-Set Load Resistance: http://192.168.4.1/set_resistance
+- Start test: http://192.168.4.1/start
+- Stop test: http://192.168.4.1/stop
+- Set Voltage Threshold: http://192.168.4.1/set_threshold
+- Set Load Resistance: http://192.168.4.1/set_resistance
