@@ -18,7 +18,7 @@
 - **Buzzer**  
 
 ## 📷 Screenshot  
-![Web Interface](screenshot.png)
+![Web Interface](screenshot.jpg)
 
 ## 🚀 Installation  
 1. Clone repo:  
