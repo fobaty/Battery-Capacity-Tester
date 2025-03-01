@@ -1,4 +1,4 @@
-# ESP32 Battery Tester 🔋  
+# ESP32 Capacity Battery Tester 🔋  
 
 🚀 **Battery testing system using ESP32, INA226, and Web Server.**  
 
