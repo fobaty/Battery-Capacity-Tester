@@ -25,7 +25,7 @@
    ```bash
    git clone https://github.com/fobaty/ESP32-Battery-Capacity-Tester.git
 2. Install Arduino IDE & ESP32 board
-3. Install INA226 library:
+3. Install INA226_WE library:
   - Open Library Manager in Arduino IDE
   - Search Adafruit INA226 and install
 4. Upload code to ESP32
