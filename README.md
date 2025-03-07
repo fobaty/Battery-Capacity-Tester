@@ -27,7 +27,7 @@
 2. Install Arduino IDE & ESP32 board
 3. Install INA226_WE library:
   - Open Library Manager in Arduino IDE
-  - Search Adafruit INA226 and install
+  - Search INA226_WE and install
 4. Upload code to ESP32
 
 🖥️ Web Interface
