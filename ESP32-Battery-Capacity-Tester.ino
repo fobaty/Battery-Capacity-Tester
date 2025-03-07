@@ -1,18 +1,22 @@
+#include <Wire.h>
+#include <INA226_WE.h>
 #include <WiFi.h>
 #include <WebServer.h>
 #include <SPIFFS.h>
 
-#define RELAY_PIN 20
-#define BUZZER_PIN 19
-#define VOLTAGE_PIN 1
-#define R1 150000.0
-#define R2 10000.0
+#define I2C_SDA 20
+#define I2C_SCL 19
+#define RELAY_PIN 18
+#define BUZZER_PIN 15
 
 const char* ssid = "BatteryTesterAP";
 const char* password = "";
 
+INA226_WE ina226 = INA226_WE(0x40);
 WebServer server(80);
+
 float batteryVoltage = 0.0;
+float dischargeCurrent = 0.0;
 float loadResistance = 3.3;
 bool testRunning = false;
 unsigned long testStartTime;
@@ -26,11 +30,22 @@ void logTestData(unsigned long elapsedTime, float dischargeCurrent);
 
 void setup() {
     Serial.begin(115200);
+    Wire.begin(I2C_SDA, I2C_SCL);
+    
+    if (!ina226.init()) {
+        Serial.println("Failed to initialize INA226!");
+        while (1);
+    }
+    Serial.println("INA226 initialized!");
+    ina226.setAverage(AVERAGE_16);
+    ina226.setConversionTime(CONV_TIME_1100);
+    ina226.setMeasureMode(CONTINUOUS);
+
     pinMode(RELAY_PIN, OUTPUT);
     pinMode(BUZZER_PIN, OUTPUT);
     digitalWrite(RELAY_PIN, LOW);
     digitalWrite(BUZZER_PIN, LOW);
-    
+
     if (!SPIFFS.begin(true)) {
         Serial.println("SPIFFS Mount Failed");
         while (1);
@@ -40,7 +55,7 @@ void setup() {
     Serial.println("Access Point started!");
     Serial.print("IP address: ");
     Serial.println(WiFi.softAPIP());
-    
+
     server.on("/", handleRoot);
     server.on("/start", handleStartTest);
     server.on("/stop", handleStopTest);
@@ -52,34 +67,24 @@ void setup() {
 
 void loop() {
     server.handleClient();
-    
-   int rawADC = analogRead(VOLTAGE_PIN);
-   float voltageOut = (rawADC / 4095.0) * 3.3;  // Если 12-битный ADC и 3.3V питание
-batteryVoltage = voltageOut * ((R1 + R2) / R2);
 
-Serial.print("Raw ADC: ");
-Serial.println(rawADC);
-Serial.print("Voltage Out: ");
-Serial.println(voltageOut);
-Serial.print("Battery Voltage: ");
-Serial.println(batteryVoltage);
+    batteryVoltage = ina226.getBusVoltage_V();
+    dischargeCurrent = ina226.getCurrent_mA() / 1000.0;
 
-
-    float dischargeCurrent = batteryVoltage / loadResistance;
     Serial.print("Battery Voltage: ");
     Serial.println(batteryVoltage);
     Serial.print("Discharge Current: ");
     Serial.println(dischargeCurrent);
-    
+
     if (testRunning) {
         unsigned long elapsedTime = (millis() - testStartTime) / 1000;
-        dischargedAh = (dischargeCurrent * elapsedTime) / 3600.0;
-        
+        dischargedAh += (dischargeCurrent * (millis() - lastLogTime) / 3600000.0);
+
         if (batteryVoltage < voltageThreshold) {
             Serial.println("Voltage below threshold! Stopping test.");
             stopTest();
         }
-        
+
         if (millis() - lastLogTime >= logInterval) {
             lastLogTime = millis();
             logTestData(elapsedTime, dischargeCurrent);
@@ -92,15 +97,14 @@ void handleRoot() {
     unsigned long elapsedTime = (testRunning) ? (millis() - testStartTime) / 1000 : testDuration;
     unsigned long minutes = elapsedTime / 60;
     unsigned long seconds = elapsedTime % 60;
-    float dischargeCurrent = batteryVoltage / loadResistance;
-    
+
     String html = "<html><body>";
     html += "<h1>Battery Tester v1</h1>";
     html += "<p>Battery Voltage: " + String(batteryVoltage) + "V</p>";
     html += "<p>Discharge Current: " + String(dischargeCurrent, 2) + "A</p>";
-    html += "<p>Load Resistance: " + String(loadResistance, 2) + " Omhs</p>";
+    html += "<p>Load Resistance: " + String(loadResistance, 2) + " Ohms</p>";
     html += "<p>Discharged Capacity: " + String(dischargedAh, 3) + " Ah</p>";
-    
+
     if (!testRunning && testDuration > 0) {
         html += "<h2>Test Results</h2>";
         html += "<p><strong>Test Stopped!</strong></p>";
@@ -108,19 +112,18 @@ void handleRoot() {
         html += "<p>Discharged Capacity: " + String(dischargedAh, 3) + " Ah</p>";
         html += "<p>Test Duration: " + String(minutes) + " min " + String(seconds) + " sec</p>";
     }
-    
+
     html += "<p><a href='/start'>Start Test</a> | <a href='/stop'>Stop Test</a></p>";
     if (testRunning) {
         html += "<p>Test running for: " + String(minutes) + " min " + String(seconds) + " sec</p>";
     }
-    
+
     html += "<hr>";
-    
     html += "<p><form action='/set_threshold' method='POST'>";
     html += "Set Voltage Threshold: <input type='number' name='threshold' step='0.1' min='0' value='" + String(voltageThreshold) + "'> V<br>";
     html += "<input type='submit' value='Set Threshold'>";
     html += "</form></p>";
-    
+
     html += "<p><form action='/set_resistance' method='POST'>";
     html += "Set Load Resistance: <input type='number' name='resistance' step='0.1' min='0' value='" + String(loadResistance) + "'> ohm<br>";
     html += "<input type='submit' value='Set Resistance'>";
@@ -176,10 +179,10 @@ void handleSetResistance() {
 }
 
 void logTestData(unsigned long elapsedTime, float dischargeCurrent) {
-    File file = SPIFFS.open("/test.txt", FILE_APPEND);
-    if (file) {
-        file.printf("Time: %lu sec, Voltage: %.2fV, Discharged: %.3f Ah, Current: %.2f A\n", elapsedTime, batteryVoltage, dischargedAh, dischargeCurrent);
-        file.close();
-        Serial.println("Data logged.");
-    }
+    // Логируем данные в сериальный порт
+    Serial.print("Elapsed Time: ");
+    Serial.print(elapsedTime);
+    Serial.print(" s, Discharge Current: ");
+    Serial.print(dischargeCurrent, 4);
+    Serial.println(" A");
 }
