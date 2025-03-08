@@ -22,7 +22,7 @@ Where:
 - `R` = Resistance (Ω)  
 
 #### **Example Calculation:**  
-For **Battery Voltage** = 12.33V and **Load Resistance** = 17.50Ω:  
+For **Battery Voltage** = 12.33V and **Load Resistance** = 3.3Ω:  
 
 
 
