@@ -15,8 +15,6 @@ The calculation is made based on the voltage taken from INA226 and Load Resistan
 ### ⚡ **Theoretical Current Calculation (Ohm’s Law)**  
 The discharge current is calculated using **Ohm’s Law**:  
 <p>I = V / R</p>
-![Ohm's Law](https://latex.codecogs.com/png.latex?I%3D%5Cfrac%7BV%7D%7BR%7D)
-
 Where:  
 - `I` = Current (A)  
 - `V` = Voltage (V)  
