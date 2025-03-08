@@ -42,6 +42,7 @@ Where:
 4. Upload code to ESP32
 
 🖥️ Web Interface
+- Main page: http://192.168.4.1
 - Start test: http://192.168.4.1/start
 - Stop test: http://192.168.4.1/stop
 - Set Voltage Threshold: http://192.168.4.1/set_threshold
