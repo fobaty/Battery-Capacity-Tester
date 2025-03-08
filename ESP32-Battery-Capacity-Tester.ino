@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include <INA226_WE.h>
+#include "INA226.h"
 #include <WiFi.h>
 #include <WebServer.h>
 #include <SPIFFS.h>
@@ -12,7 +12,7 @@
 const char* ssid = "BatteryTesterAP";
 const char* password = "";
 
-INA226_WE ina226 = INA226_WE(0x40);
+INA226 ina226(0x40);
 WebServer server(80);
 
 float batteryVoltage = 0.0;
@@ -22,7 +22,7 @@ bool testRunning = false;
 unsigned long testStartTime;
 unsigned long testDuration = 0;
 unsigned long lastLogTime = 0;
-unsigned long logInterval = 300000;
+unsigned long logInterval = 1000;
 float dischargedAh = 0.0;
 float voltageThreshold = 10.5;
 
@@ -30,16 +30,16 @@ void logTestData(unsigned long elapsedTime, float dischargeCurrent);
 
 void setup() {
     Serial.begin(115200);
+    delay(1000);
+    Serial.println("Battery Tester Starting...");
+
     Wire.begin(I2C_SDA, I2C_SCL);
     
-    if (!ina226.init()) {
+    if (!ina226.begin()) {
         Serial.println("Failed to initialize INA226!");
         while (1);
     }
     Serial.println("INA226 initialized!");
-    ina226.setAverage(AVERAGE_16);
-    ina226.setConversionTime(CONV_TIME_1100);
-    ina226.setMeasureMode(CONTINUOUS);
 
     pinMode(RELAY_PIN, OUTPUT);
     pinMode(BUZZER_PIN, OUTPUT);
@@ -68,8 +68,8 @@ void setup() {
 void loop() {
     server.handleClient();
 
-    batteryVoltage = ina226.getBusVoltage_V();
-    dischargeCurrent = ina226.getCurrent_mA() / 1000.0;
+    batteryVoltage = ina226.getBusVoltage();
+    dischargeCurrent = batteryVoltage / loadResistance;  // I don't use the current from INA226 as I haven't been able to calibrate it yet.
 
     Serial.print("Battery Voltage: ");
     Serial.println(batteryVoltage);
@@ -77,18 +77,18 @@ void loop() {
     Serial.println(dischargeCurrent);
 
     if (testRunning) {
-        unsigned long elapsedTime = (millis() - testStartTime) / 1000;
-        dischargedAh += (dischargeCurrent * (millis() - lastLogTime) / 3600000.0);
+        unsigned long currentTime = millis();
+        unsigned long elapsedTime = (currentTime - testStartTime) / 1000;
+        float timeDiffHours = (currentTime - lastLogTime) / 3600000.0;
+        dischargedAh += dischargeCurrent * timeDiffHours;
+        lastLogTime = currentTime;
 
         if (batteryVoltage < voltageThreshold) {
             Serial.println("Voltage below threshold! Stopping test.");
             stopTest();
         }
 
-        if (millis() - lastLogTime >= logInterval) {
-            lastLogTime = millis();
-            logTestData(elapsedTime, dischargeCurrent);
-        }
+        logTestData(elapsedTime, dischargeCurrent);
     }
     delay(1000);
 }
@@ -137,6 +137,7 @@ void handleStartTest() {
     testStartTime = millis();
     dischargedAh = 0.0;
     testDuration = 0;
+    lastLogTime = millis();
     digitalWrite(RELAY_PIN, HIGH);
     digitalWrite(BUZZER_PIN, LOW);
     Serial.println("Test started.");
@@ -179,7 +180,6 @@ void handleSetResistance() {
 }
 
 void logTestData(unsigned long elapsedTime, float dischargeCurrent) {
-    // Логируем данные в сериальный порт
     Serial.print("Elapsed Time: ");
     Serial.print(elapsedTime);
     Serial.print(" s, Discharge Current: ");
