@@ -15,10 +15,16 @@ The calculation is made based on the voltage taken from INA226 and Load Resistan
 ### ⚡ **Theoretical Current Calculation (Ohm’s Law)**  
 The discharge current is calculated using **Ohm’s Law**:  
 <p>I = V / R</p>
+
 Where:  
 - `I` = Current (A)  
 - `V` = Voltage (V)  
 - `R` = Resistance (Ω)  
+
+#### **Example Calculation:**  
+For **Battery Voltage** = 12.33V and **Load Resistance** = 17.50Ω:  
+
+
 
 ## 🛠️ Hardware  
 - **ESP32**  
