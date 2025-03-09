@@ -57,5 +57,5 @@ Where:
  - Discharged it to 10.5V using a 3.3Ω load resistor.
  - I also used a small fan to cool the resistor (what I found at home).
  - The measured capacity was only 12Ah, while the battery is rated at 45Ah.
- - 
+ - On the web page in the test results it displays the Final voltage as 12.08 volts this voltage is measured after stopping the test and without load. If you measure with load it will be 10.5 volts, since the test automatically stops at 10.5 volts and disconnects the load
 ![Web Interface](testing.jpg)
