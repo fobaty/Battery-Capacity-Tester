@@ -1,3 +1,8 @@
+/*
+   Battery testing system using ESP32, INA226, and Web Server.
+    GIT: https://github.com/fobaty/ESP32-Battery-Capacity-Tester
+    (c) 2025 by Oleksii Shataliuk
+*/
 #include <Wire.h>
 #include "INA226.h"
 #include <WiFi.h>
