@@ -50,3 +50,6 @@ Where:
 - Stop test: http://192.168.4.1/stop
 - Set Voltage Threshold: http://192.168.4.1/set_threshold
 - Set Load Resistance: http://192.168.4.1/set_resistance
+
+  ## 📷  Testing
+![Web Interface](testing.jpg)
