@@ -3,11 +3,11 @@
 🚀 **Battery testing system using ESP32, INA226, and Web Server.**  
 
 ## 📌 Features  
-✅ Measures **battery voltage** using INA226
-✅ Battery capacity calculation
-✅ Automatic discharge stop at set voltage
-✅ Sound notification upon completion of the test
-✅ Logs test results to SPIFFS  
+✅ Measures **battery voltage** using INA226 </br>
+✅ Battery capacity calculation </br>
+✅ Automatic discharge stop at set voltage </br>
+✅ Sound notification upon completion of the test</br>
+✅ Logs test results to SPIFFS </br>
 ✅ **Web interface** to start/stop tests and configure parameters  
 
 I do not use the current obtained from INA226. 
