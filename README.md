@@ -52,4 +52,9 @@ Where:
 - Set Load Resistance: http://192.168.4.1/set_resistance
 
   ## 📷  Testing
+ - Fully charged the battery to 12.8V.
+ - Make a short pause (30 minutes or 1 hour) after charging to let the battery cool down.
+ - I also used a small fan to cool the resistor (what I found at home).
+ - Discharged it to 10.5V using a 3.3Ω load resistor.
+ - The measured capacity was only 12Ah, while the battery is rated at 45Ah
 ![Web Interface](testing.jpg)
