@@ -30,6 +30,9 @@ Where:
 
 ## 📷 Screenshot  
 ![Web Interface](screenshot.jpg)
+## 📷  ESP32 Capacity Battery Tester  
+![Web Interface](device.jpg)
+
 
 ## 🚀 Installation  
 1. Clone repo:  
