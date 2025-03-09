@@ -10,7 +10,7 @@
 ✅ Logs test results to SPIFFS </br>
 ✅ **Web interface** to start/stop tests and configure parameters  
 
-I do not use the current obtained from INA226. 
+I don't use the current obtained from INA226. 
 The calculation is made based on the voltage taken from INA226 and Load Resistance (default 3.3 Ohms, it is possible to change it via the web interface)
 ### ⚡ **Theoretical Current Calculation (Ohm’s Law)**  
 The discharge current is calculated using **Ohm’s Law**:  
