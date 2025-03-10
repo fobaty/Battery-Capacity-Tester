@@ -160,7 +160,7 @@ void stopTest() {
     testRunning = false;
     testDuration = (millis() - testStartTime) / 1000;
     digitalWrite(RELAY_PIN, LOW);
-    digitalWrite(BUZZER_PIN, LOW);
+    digitalWrite(BUZZER_PIN, HIGH);
     Serial.println("Test stopped.");
 }
 
